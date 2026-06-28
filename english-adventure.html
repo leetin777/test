@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ English Adventure</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: #E8F4FD;
+    color: #1f2937;
+    min-height: 100vh;
+  }
+  #app {
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #fff;
+    box-shadow: 0 0 24px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #3B82F6;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header .title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  header .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stars {
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  .icon-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.35); }
+  main {
+    flex: 1;
+    padding: 20px 16px 40px;
+  }
+  .btn {
+    display: inline-block;
+    background: #3B82F6;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-size: 18px;
+    min-height: 48px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background .15s;
+  }
+  .btn:hover { background: #2563EB; }
+  .btn:disabled { background: #93c5fd; cursor: not-allowed; }
+  .btn-secondary {
+    background: #fff;
+    color: #3B82F6;
+    border: 2px solid #3B82F6;
+  }
+  .btn-secondary:hover { background: #EFF6FF; }
+
+  /* Home */
+  .welcome {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 24px;
+    color: #1e3a8a;
+  }
+  .mode-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .mode-card {
+    background: #F0F9FF;
+    border: 2px solid #BFDBFE;
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .mode-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59,130,246,0.2);
+    border-color: #3B82F6;
+  }
+  .mode-card .emoji { font-size: 36px; }
+  .mode-card .name { font-size: 22px; font-weight: bold; margin: 6px 0 2px; }
+  .mode-card .sub { font-size: 16px; color: #4b5563; }
+
+  /* Sentence builder */
+  .level-label {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e40af;
+    margin-bottom: 12px;
+  }
+  .assembly-area {
+    min-height: 70px;
+    background: #F0F9FF;
+    border: 2px dashed #93C5FD;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  .word-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .word-card {
+    background: #fff;
+    border: 2px solid #3B82F6;
+    color: #1e3a8a;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+  .word-card:hover { background: #DBEAFE; }
+  .feedback {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .feedback.correct { background: #D1FAE5; color: #065F46; }
+  .feedback.wrong { background: #FEF3C7; color: #92400E; }
+  .center-row { text-align: center; }
+
+  /* Chat */
+  .chat-header {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .chat-header .emoji { font-size: 48px; }
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .suggestion-btn {
+    background: #EFF6FF;
+    border: 1px solid #93C5FD;
+    color: #1e3a8a;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .suggestion-btn:hover { background: #DBEAFE; }
+  .chat-log {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .bubble {
+    max-width: 85%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 16px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .bubble.user {
+    align-self: flex-end;
+    background: #3B82F6;
+    color: white;
+  }
+  .bubble.ai {
+    align-self: flex-start;
+    background: #F0F9FF;
+    color: #1f2937;
+    border: 1px solid #BFDBFE;
+  }
+  .bubble.system-note {
+    align-self: center;
+    background: #FEF3C7;
+    color: #92400E;
+    font-size: 15px;
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .chat-input-row input {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #BFDBFE;
+    min-height: 48px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 16px;
+  }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+  }
+  .modal h3 { margin-top: 0; }
+  .modal input {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #BFDBFE;
+    margin: 10px 0;
+    min-height: 48px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  /* Travel */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 90px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    min-height: 48px;
+  }
+  .tab-btn.restaurant { background: #F59E0B; }
+  .tab-btn.hotel { background: #8B5CF6; }
+  .tab-btn.shopping { background: #10B981; }
+  .tab-btn.way { background: #3B82F6; }
+  .tab-btn.inactive { opacity: 0.45; }
+
+  .phrase-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .phrase-card {
+    border: 2px solid #BFDBFE;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+  }
+  .phrase-card.done { border-color: #10B981; background: #ECFDF5; }
+  .phrase-card .eng {
+    font-size: 21px;
+    font-weight: bold;
+    color: #1e3a8a;
+  }
+  .phrase-card .hint {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  .phrase-card .back {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #374151;
+    border-top: 1px dashed #BFDBFE;
+    padding-top: 10px;
+  }
+  .phrase-card .check {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 20px;
+  }
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .small-btn {
+    background: #EFF6FF;
+    border: 1px solid #93C5FD;
+    color: #1e3a8a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 15px;
+    cursor: pointer;
+    min-height: 40px;
+  }
+  .write-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .write-row input {
+    flex: 1;
+    font-size: 15px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #BFDBFE;
+  }
+  .category-done {
+    text-align: center;
+    background: #D1FAE5;
+    color: #065F46;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 16px;
+  }
+
+  /* Result */
+  .result-stars {
+    text-align: center;
+    font-size: 40px;
+    margin: 20px 0 8px;
+  }
+  .result-msg {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #1e40af;
+    margin-bottom: 16px;
+  }
+  .summary-box {
+    background: #F0F9FF;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    header .title { font-size: 17px; }
+    .word-card { font-size: 17px; padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="title">✈️ English Adventure</div>
+    <div class="right">
+      <div class="stars" id="starDisplay">⭐ × 0</div>
+      <button class="icon-btn" id="homeBtn" title="홈으로">🏠</button>
+      <button class="icon-btn" id="settingsBtn" title="설정">⚙️</button>
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  /* ---------------- State ---------------- */
+  const state = {
+    screen: 'home',
+    stars: 0,
+    apiKey: '',
+    completedModes: new Set(),
+    learnedPhrasesCount: 0,
+
+    sentence: {
+      level: 1,
+      problemIndex: 0,
+      pool: [],
+      assembled: [],
+      correctCount: 0,
+      feedback: null
+    },
+    chat: {
+      messages: []
+    },
+    travel: {
+      tab: 'restaurant',
+      flipped: {},
+      doneCards: {},
+      writeOpen: {}
+    }
+  };
+
+  const SYSTEM_PROMPT =
+`You are a friendly English teacher for Korean elementary school students (ages 6-12, intermediate level).
+
+Rules:
+1. Always respond in BOTH English and Korean.
+   - English explanation first (simple, short sentences)
+   - Korean translation/explanation right after in parentheses or on the next line
+2. Use very simple English (A1-A2 level vocabulary)
+3. Always give 1 example sentence using the word or expression
+4. If the student asks in Korean, answer in both Korean and English
+5. End every response with an encouraging phrase like "Great question! 잘 물어봤어요! 😊" or "You're doing great! 잘하고 있어요! ⭐"
+6. Keep responses SHORT — maximum 5-6 lines total
+7. Never discuss topics unrelated to English learning
+8. If unsure, say "That's a great question! Let me explain simply. 좋은 질문이에요! 쉽게 설명할게요!"`;
+
+  /* ---------------- Data ---------------- */
+  const SENTENCE_LEVELS = {
+    1: [
+      { words: ["I", "like", "apples"], answer: "I like apples." },
+      { words: ["She", "is", "happy"], answer: "She is happy." },
+      { words: ["He", "can", "swim"], answer: "He can swim." },
+      { words: ["We", "have", "fun"], answer: "We have fun." },
+      { words: ["They", "play", "soccer"], answer: "They play soccer." }
+    ],
+    2: [
+      { words: ["I", "want", "a", "banana"], answer: "I want a banana." },
+      { words: ["She", "has", "a", "cat"], answer: "She has a cat." },
+      { words: ["He", "is", "very", "tall"], answer: "He is very tall." },
+      { words: ["We", "like", "ice", "cream"], answer: "We like ice cream." },
+      { words: ["They", "go", "to", "school"], answer: "They go to school." }
+    ],
+    3: [
+      { words: ["I", "can", "ride", "a", "bike"], answer: "I can ride a bike." },
+      { words: ["She", "wants", "to", "eat", "pizza"], answer: "She wants to eat pizza." },
+      { words: ["He", "is", "playing", "the", "piano"], answer: "He is playing the piano." },
+      { words: ["We", "are", "going", "to", "the", "park"], answer: "We are going to the park." },
+      { words: ["They", "have", "a", "big", "yellow", "dog"], answer: "They have a big yellow dog." }
+    ]
+  };
+
+  const TRAVEL_DATA = {
+    restaurant: {
+      label: "🍽️ At the Restaurant", sub: "식당에서", cls: "restaurant",
+      phrases: [
+        { en: "Can I have a menu, please?", ko: "메뉴판 주세요.", hint: "캔 아이 해브 어 메뉴 플리즈", usage: "식당에 들어가서 메뉴판을 요청할 때 사용해요." },
+        { en: "I would like pizza, please.", ko: "피자 주세요.", hint: "아이 우드 라이크 피자 플리즈", usage: "음식을 주문할 때 사용해요." },
+        { en: "How much is this?", ko: "이것은 얼마예요?", hint: "하우 머치 이즈 디스", usage: "가격을 물어볼 때 사용해요." },
+        { en: "It's delicious! Thank you!", ko: "맛있어요! 감사합니다!", hint: "잇츠 딜리셔스 땡큐", usage: "음식이 맛있을 때 칭찬하는 표현이에요." },
+        { en: "Check, please.", ko: "계산서 주세요.", hint: "체크 플리즈", usage: "식사를 마치고 계산을 요청할 때 사용해요." }
+      ]
+    },
+    hotel: {
+      label: "🏨 At the Hotel", sub: "호텔에서", cls: "hotel",
+      phrases: [
+        { en: "I have a reservation.", ko: "예약했어요.", hint: "아이 해브 어 레저베이션", usage: "체크인할 때 예약을 알려주는 표현이에요." },
+        { en: "Where is my room?", ko: "제 방이 어디예요?", hint: "웨얼 이즈 마이 룸", usage: "방의 위치를 물을 때 사용해요." },
+        { en: "Can I have more towels?", ko: "수건을 더 주실 수 있어요?", hint: "캔 아이 해브 모어 타월즈", usage: "필요한 물건을 추가로 요청할 때 사용해요." },
+        { en: "What time is breakfast?", ko: "아침 식사는 몇 시예요?", hint: "왓 타임 이즈 브렉퍼스트", usage: "조식 시간을 물을 때 사용해요." },
+        { en: "Thank you for your help!", ko: "도와주셔서 감사합니다!", hint: "땡큐 포 유어 헬프", usage: "도움을 받은 후 감사를 표현할 때 사용해요." }
+      ]
+    },
+    shopping: {
+      label: "🛍️ Shopping", sub: "쇼핑할 때", cls: "shopping",
+      phrases: [
+        { en: "How much is this?", ko: "이것은 얼마예요?", hint: "하우 머치 이즈 디스", usage: "물건의 가격을 물을 때 사용해요." },
+        { en: "Do you have this in another color?", ko: "다른 색깔도 있나요?", hint: "두 유 해브 디스 인 어나더 컬러", usage: "다른 색상이 있는지 물을 때 사용해요." },
+        { en: "Can I try this on?", ko: "이것을 입어봐도 될까요?", hint: "캔 아이 트라이 디스 온", usage: "옷을 입어보고 싶을 때 사용해요." },
+        { en: "I'll take this one.", ko: "이것으로 할게요.", hint: "아윌 테이크 디스 원", usage: "구매를 결정할 때 사용해요." },
+        { en: "Do you have a bag?", ko: "가방 있나요?", hint: "두 유 해브 어 백", usage: "쇼핑백이 필요할 때 사용해요." }
+      ]
+    },
+    way: {
+      label: "🗺️ Finding the Way", sub: "길 찾을 때", cls: "way",
+      phrases: [
+        { en: "Excuse me, where is the bathroom?", ko: "실례합니다, 화장실이 어디예요?", hint: "익스큐즈 미 웨얼 이즈 더 배스룸", usage: "화장실 위치를 물을 때 사용해요." },
+        { en: "How do I get to the subway?", ko: "지하철은 어떻게 가요?", hint: "하우 두 아이 겟 투 더 서브웨이", usage: "지하철 가는 길을 물을 때 사용해요." },
+        { en: "Is it far from here?", ko: "여기서 멀어요?", hint: "이즈 잇 파 프롬 히어", usage: "거리를 물을 때 사용해요." },
+        { en: "Turn left / Turn right.", ko: "왼쪽으로 / 오른쪽으로 도세요.", hint: "턴 레프트 / 턴 라이트", usage: "방향을 알려줄 때 사용해요." },
+        { en: "Thank you so much!", ko: "정말 감사합니다!", hint: "땡큐 쏘 머치", usage: "도움을 받고 크게 감사를 표현할 때 사용해요." }
+      ]
+    }
+  };
+
+  /* ---------------- Helpers ---------------- */
+  function el(tag, props, children) {
+    const e = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(k => {
+        if (k === 'class') e.className = props[k];
+        else if (k === 'text') e.textContent = props[k];
+        else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(), props[k]);
+        else e.setAttribute(k, props[k]);
+      });
+    }
+    (children || []).forEach(c => { if (c) e.appendChild(c); });
+    return e;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function addStars(n) {
+    state.stars += n;
+    document.getElementById('starDisplay').textContent = `⭐ × ${state.stars % 1 === 0 ? state.stars : state.stars.toFixed(1)}`;
+  }
+
+  function setScreen(screen) {
+    state.screen = screen;
+    render();
+  }
+
+  /* ---------------- Render root ---------------- */
+  function render() {
+    const main = document.getElementById('main');
+    main.innerHTML = '';
+    document.getElementById('starDisplay').textContent = `⭐ × ${state.stars % 1 === 0 ? state.stars : state.stars.toFixed(1)}`;
+
+    if (state.screen === 'home') main.appendChild(renderHome());
+    else if (state.screen === 'sentence') main.appendChild(renderSentence());
+    else if (state.screen === 'chat') main.appendChild(renderChat());
+    else if (state.screen === 'travel') main.appendChild(renderTravel());
+    else if (state.screen === 'result') main.appendChild(renderResult());
+  }
+
+  /* ---------------- Home ---------------- */
+  function renderHome() {
+    const wrap = el('div', {});
+    wrap.appendChild(el('div', { class: 'welcome', text: 'Hello! What do you want to learn today? 오늘 무엇을 배울까요?' }));
+
+    const cards = el('div', { class: 'mode-cards' });
+
+    cards.appendChild(el('div', { class: 'mode-card', onClick: () => {
+      resetSentenceMode();
+      setScreen('sentence');
+    }}, [
+      el('div', { class: 'emoji', text: '🧩' }),
+      el('div', { class: 'name', text: 'Make a Sentence' }),
+      el('div', { class: 'sub', text: '문장 만들기' })
+    ]));
+
+    cards.appendChild(el('div', { class: 'mode-card', onClick: () => setScreen('chat') }, [
+      el('div', { class: 'emoji', text: '🤖' }),
+      el('div', { class: 'name', text: 'Ask English Teacher' }),
+      el('div', { class: 'sub', text: 'AI 영어 선생님' })
+    ]));
+
+    cards.appendChild(el('div', { class: 'mode-card', onClick: () => setScreen('travel') }, [
+      el('div', { class: 'emoji', text: '🗺️' }),
+      el('div', { class: 'name', text: 'Travel English' }),
+      el('div', { class: 'sub', text: '여행 영어' })
+    ]));
+
+    wrap.appendChild(cards);
+
+    const resultRow = el('div', { class: 'center-row', style: 'margin-top:24px;' });
+    resultRow.appendChild(el('button', { class: 'btn btn-secondary', text: '오늘의 결과 보기 📊', onClick: () => setScreen('result') }));
+    wrap.appendChild(resultRow);
+
+    return wrap;
+  }
+
+  /* ---------------- Sentence Builder ---------------- */
+  function resetSentenceMode() {
+    state.sentence.level = 1;
+    state.sentence.problemIndex = 0;
+    state.sentence.correctCount = 0;
+    state.sentence.feedback = null;
+    loadSentenceProblem();
+  }
+
+  function loadSentenceProblem() {
+    const s = state.sentence;
+    const problem = SENTENCE_LEVELS[s.level][s.problemIndex];
+    s.pool = shuffle(problem.words.map((w, i) => ({ word: w, id: i + '_' + w })));
+    s.assembled = [];
+    s.feedback = null;
+  }
+
+  function renderSentence() {
+    const s = state.sentence;
+    const wrap = el('div', {});
+    wrap.appendChild(el('div', { class: 'level-label', text: `Level ${s.level} — Sentence ${s.problemIndex + 1} / 5` }));
+
+    if (s.feedback) {
+      wrap.appendChild(el('div', { class: `feedback ${s.feedback.ok ? 'correct' : 'wrong'}`, text: s.feedback.text }));
+    }
+
+    const assembly = el('div', { class: 'assembly-area' });
+    s.assembled.forEach((item, idx) => {
+      assembly.appendChild(el('div', { class: 'word-card', text: item.word, onClick: () => {
+        s.assembled.splice(idx, 1);
+        s.pool.push(item);
+        render();
+      }}));
+    });
+    wrap.appendChild(assembly);
+
+    const pool = el('div', { class: 'word-pool' });
+    s.pool.forEach((item, idx) => {
+      pool.appendChild(el('div', { class: 'word-card', text: item.word, onClick: () => {
+        s.pool.splice(idx, 1);
+        s.assembled.push(item);
+        render();
+      }}));
+    });
+    wrap.appendChild(pool);
+
+    const row = el('div', { class: 'center-row' });
+    const checkBtn = el('button', {
+      class: 'btn',
+      text: 'Check!',
+      onClick: checkSentence
+    });
+    if (s.assembled.length !== SENTENCE_LEVELS[s.level][s.problemIndex].words.length) {
+      checkBtn.disabled = true;
+    }
+    row.appendChild(checkBtn);
+    wrap.appendChild(row);
+
+    return wrap;
+  }
+
+  function checkSentence() {
+    const s = state.sentence;
+    const problem = SENTENCE_LEVELS[s.level][s.problemIndex];
+    const built = s.assembled.map(i => i.word).join(' ') + '.';
+    const ok = built === problem.answer;
+
+    if (ok) {
+      s.correctCount++;
+      addStars(1);
+      s.feedback = { ok: true, text: '⭐ Great job! Perfect sentence!' };
+    } else {
+      s.feedback = { ok: false, text: `😊 Good try! The correct answer is: ${problem.answer} Let's try again!` };
+    }
+    render();
+
+    setTimeout(() => {
+      if (!ok) {
+        loadSentenceProblem();
+        render();
+        return;
+      }
+      advanceSentence();
+    }, 1400);
+  }
+
+  function advanceSentence() {
+    const s = state.sentence;
+    s.problemIndex++;
+    if (s.problemIndex >= SENTENCE_LEVELS[s.level].length) {
+      const levelComplete = `🎉 Level ${s.level} Complete! You got ${s.correctCount}/5 stars!`;
+      if (s.level >= 3) {
+        state.completedModes.add('sentence');
+        alert(levelComplete + "\n\n전체 완료! 결과 화면으로 이동합니다.");
+        setScreen('result');
+        return;
+      } else {
+        alert(levelComplete);
+        s.level++;
+        s.problemIndex = 0;
+        s.correctCount = 0;
+        loadSentenceProblem();
+        render();
+        return;
+      }
+    }
+    loadSentenceProblem();
+    render();
+  }
+
+  /* ---------------- Chat / AI Teacher ---------------- */
+  function renderChat() {
+    const wrap = el('div', {});
+    wrap.appendChild(el('div', { class: 'chat-header' }, [
+      el('div', { class: 'emoji', text: '🤖' }),
+      el('div', { text: 'Ask English Teacher 영어 선생님께 물어보세요' })
+    ]));
+
+    const suggestions = el('div', { class: 'suggestions' });
+    [
+      "What does '______' mean?",
+      "How do you use '______' in a sentence?",
+      "How do you say '______' in English?"
+    ].forEach(q => {
+      suggestions.appendChild(el('button', { class: 'suggestion-btn', text: q, onClick: () => {
+        document.getElementById('chatInput').value = q;
+      }}));
+    });
+    wrap.appendChild(suggestions);
+
+    const log = el('div', { class: 'chat-log', id: 'chatLog' });
+    if (!state.apiKey) {
+      log.appendChild(el('div', { class: 'bubble system-note', text: 'API 키를 입력해야 AI 선생님을 만날 수 있어요. 선생님께 여쭤보세요! (⚙️ 설정 버튼을 눌러주세요)' }));
+    }
+    state.chat.messages.forEach(m => {
+      log.appendChild(el('div', { class: `bubble ${m.role === 'user' ? 'user' : 'ai'}`, text: m.text }));
+    });
+    wrap.appendChild(log);
+
+    const inputRow = el('div', { class: 'chat-input-row' });
+    const input = el('input', { id: 'chatInput', placeholder: '궁금한 것을 물어보세요...' });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+    inputRow.appendChild(input);
+    inputRow.appendChild(el('button', { class: 'btn', text: 'Ask! 물어보기', id: 'askBtn', onClick: sendChat }));
+    wrap.appendChild(inputRow);
+
+    setTimeout(() => { log.scrollTop = log.scrollHeight; }, 0);
+    return wrap;
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    if (!state.apiKey) {
+      alert('API 키를 입력해야 AI 선생님을 만날 수 있어요. ⚙️ 설정 버튼을 눌러주세요!');
+      return;
+    }
+
+    state.chat.messages.push({ role: 'user', text });
+    input.value = '';
+    render();
+
+    const log = document.getElementById('chatLog');
+    log.appendChild(el('div', { class: 'bubble ai', id: 'thinkingBubble', text: '선생님이 생각하는 중이에요... 🤔' }));
+    log.scrollTop = log.scrollHeight;
+
+    const askBtn = document.getElementById('askBtn');
+    if (askBtn) askBtn.disabled = true;
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": state.apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 300,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content: text }]
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+      const data = await response.json();
+      const aiText = (data.content && data.content[0] && data.content[0].text) || '죄송해요, 응답을 받지 못했어요.';
+      state.chat.messages.push({ role: 'ai', text: aiText });
+      state.completedModes.add('chat');
+    } catch (err) {
+      state.chat.messages.push({ role: 'ai', text: '잠깐 연결이 안 됐어요. 다시 눌러보세요! 😊' });
+    } finally {
+      render();
+    }
+  }
+
+  /* ---------------- Settings Modal ---------------- */
+  function openSettingsModal() {
+    const overlay = el('div', { class: 'modal-overlay', id: 'settingsOverlay' });
+    const modal = el('div', { class: 'modal' });
+    modal.appendChild(el('h3', { text: '⚙️ 설정' }));
+    modal.appendChild(el('div', { text: 'Anthropic API 키를 입력하세요 (브라우저 메모리에만 저장됩니다).' }));
+    const input = el('input', { type: 'password', placeholder: 'sk-ant-...', value: state.apiKey });
+    modal.appendChild(input);
+
+    const actions = el('div', { class: 'modal-actions' });
+    actions.appendChild(el('button', { class: 'btn btn-secondary', text: '닫기', onClick: () => overlay.remove() }));
+    actions.appendChild(el('button', { class: 'btn', text: '저장', onClick: () => {
+      state.apiKey = input.value.trim();
+      overlay.remove();
+      render();
+    }}));
+    modal.appendChild(actions);
+
+    overlay.appendChild(modal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+    input.focus();
+  }
+
+  /* ---------------- Travel English ---------------- */
+  function renderTravel() {
+    const wrap = el('div', {});
+    const tabs = el('div', { class: 'tabs' });
+    Object.keys(TRAVEL_DATA).forEach(key => {
+      const data = TRAVEL_DATA[key];
+      const active = state.travel.tab === key;
+      tabs.appendChild(el('button', {
+        class: `tab-btn ${data.cls} ${active ? '' : 'inactive'}`,
+        text: data.label,
+        onClick: () => { state.travel.tab = key; render(); }
+      }));
+    });
+    wrap.appendChild(tabs);
+
+    const currentKey = state.travel.tab;
+    const data = TRAVEL_DATA[currentKey];
+    wrap.appendChild(el('div', { class: 'level-label', text: `${data.label} — ${data.sub}` }));
+
+    const cardsWrap = el('div', { class: 'phrase-cards' });
+    const doneMap = state.travel.doneCards[currentKey] || (state.travel.doneCards[currentKey] = {});
+    const flipMap = state.travel.flipped[currentKey] || (state.travel.flipped[currentKey] = {});
+    const writeMap = state.travel.writeOpen[currentKey] || (state.travel.writeOpen[currentKey] = {});
+
+    data.phrases.forEach((p, idx) => {
+      const isFlipped = !!flipMap[idx];
+      const isDone = !!doneMap[idx];
+      const card = el('div', { class: `phrase-card ${isDone ? 'done' : ''}` });
+
+      if (isDone) card.appendChild(el('div', { class: 'check', text: '✅' }));
+
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('input')) return;
+        flipMap[idx] = !flipMap[idx];
+        render();
+      });
+
+      if (!isFlipped) {
+        card.appendChild(el('div', { class: 'eng', text: p.en }));
+        card.appendChild(el('div', { class: 'hint', text: p.hint }));
+      } else {
+        card.appendChild(el('div', { class: 'eng', text: p.en }));
+        card.appendChild(el('div', { class: 'back' }, [
+          el('div', { text: p.ko, style: 'font-weight:bold;font-size:18px;' }),
+          el('div', { text: p.usage, style: 'margin-top:4px;' })
+        ]));
+
+        const actions = el('div', { class: 'card-actions' });
+        if (!isDone) {
+          actions.appendChild(el('button', { class: 'small-btn', text: 'I learned this! ✅', onClick: () => {
+            doneMap[idx] = true;
+            addStars(0.5);
+            state.learnedPhrasesCount++;
+            checkCategoryComplete(currentKey);
+            render();
+          }}));
+        }
+        actions.appendChild(el('button', { class: 'small-btn', text: 'Write it! ✏️', onClick: () => {
+          writeMap[idx] = !writeMap[idx];
+          render();
+        }}));
+        card.appendChild(actions);
+
+        if (writeMap[idx]) {
+          const writeRow = el('div', { class: 'write-row' });
+          const writeInput = el('input', { placeholder: 'Type the phrase exactly...' });
+          writeRow.appendChild(writeInput);
+          writeRow.appendChild(el('button', { class: 'small-btn', text: 'Submit', onClick: () => {
+            if (writeInput.value.trim() === p.en) {
+              addStars(0.5);
+              alert('⭐ Perfect! You wrote it correctly!');
+              writeMap[idx] = false;
+              render();
+            } else {
+              alert('😊 Almost there! Check the spelling and try again.');
+            }
+          }}));
+          card.appendChild(writeRow);
+        }
+      }
+
+      cardsWrap.appendChild(card);
+    });
+
+    wrap.appendChild(cardsWrap);
+
+    const allDone = data.phrases.every((_, idx) => doneMap[idx]);
+    if (allDone) {
+      const catName = data.label.replace(/^[^\s]+\s/, '');
+      wrap.appendChild(el('div', { class: 'category-done', text: `🎉 You know all ${catName} phrases! 대단해요!` }));
+    }
+
+    return wrap;
+  }
+
+  function checkCategoryComplete(key) {
+    const data = TRAVEL_DATA[key];
+    const doneMap = state.travel.doneCards[key];
+    const allDone = data.phrases.every((_, idx) => doneMap[idx]);
+    if (allDone) {
+      state.completedModes.add('travel_' + key);
+      if (['restaurant', 'hotel', 'shopping', 'way'].every(k => state.completedModes.has('travel_' + k))) {
+        state.completedModes.add('travel');
+      }
+    }
+  }
+
+  /* ---------------- Result ---------------- */
+  function renderResult() {
+    const wrap = el('div', {});
+    wrap.appendChild(el('div', { class: 'result-stars', text: `⭐ × ${state.stars % 1 === 0 ? state.stars : state.stars.toFixed(1)}` }));
+
+    let msg;
+    const s = state.stars;
+    if (s >= 16) msg = 'Amazing English Explorer! 영어 탐험가 최고! 🚀';
+    else if (s >= 11) msg = 'Excellent! 훌륭해요! 🏆';
+    else if (s >= 6) msg = 'Well done! 잘했어요! 🌟';
+    else msg = 'Good start! 시작이 반이에요! 😊';
+
+    wrap.appendChild(el('div', { class: 'result-msg', text: msg }));
+
+    const modeNames = {
+      sentence: 'Make a Sentence',
+      chat: 'Ask English Teacher',
+      travel: 'Travel English'
+    };
+    const completedList = ['sentence', 'chat', 'travel'].filter(m => state.completedModes.has(m));
+
+    const summary = el('div', { class: 'summary-box' });
+    summary.appendChild(el('div', { text: `오늘의 학습 요약`, style: 'font-weight:bold;font-size:18px;margin-bottom:8px;' }));
+    summary.appendChild(el('div', { text: `완료한 모드: ${completedList.length}개 (${completedList.map(m => modeNames[m]).join(', ') || '없음'})` }));
+    summary.appendChild(el('div', { text: `배운 여행 표현: ${state.learnedPhrasesCount}개` }));
+    wrap.appendChild(summary);
+
+    const row = el('div', { class: 'center-row' });
+    row.appendChild(el('button', { class: 'btn', text: 'Play Again 다시하기', onClick: () => setScreen('home') }));
+    wrap.appendChild(row);
+
+    return wrap;
+  }
+
+  /* ---------------- Header buttons ---------------- */
+  document.getElementById('homeBtn').addEventListener('click', () => setScreen('home'));
+  document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
+
+  /* ---------------- Init ---------------- */
+  render();
+})();
+</script>
+</body>
+</html>
