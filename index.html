@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영어 학습 앱</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📚 영어 학습 앱</h1>
+    <nav>
+      <button class="tab-btn active" data-tab="flashcards">플래시카드</button>
+      <button class="tab-btn" data-tab="quiz">퀴즈</button>
+      <button class="tab-btn" data-tab="progress">진도</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="flashcards" class="tab-panel active">
+      <div class="card-area">
+        <div id="flashcard" class="flashcard">
+          <div class="card-face front" id="cardFront"></div>
+          <div class="card-face back" id="cardBack"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="prevBtn">◀ 이전</button>
+        <button id="flipBtn">뒤집기</button>
+        <button id="nextBtn">다음 ▶</button>
+      </div>
+      <div class="controls">
+        <button id="knowBtn" class="know-btn">알아요 ✅</button>
+        <button id="dontKnowBtn" class="dontknow-btn">몰라요 ❌</button>
+      </div>
+      <p id="cardCounter"></p>
+    </section>
+
+    <section id="quiz" class="tab-panel">
+      <div id="quizArea">
+        <p id="quizQuestion" class="quiz-question"></p>
+        <div id="quizOptions" class="quiz-options"></div>
+        <p id="quizFeedback" class="quiz-feedback"></p>
+        <button id="quizNextBtn" style="display:none;">다음 문제 ▶</button>
+      </div>
+      <p id="quizScore"></p>
+    </section>
+
+    <section id="progress" class="tab-panel">
+      <h2>학습 진도</h2>
+      <div class="stats">
+        <div class="stat-box">
+          <span class="stat-num" id="knownCount">0</span>
+          <span class="stat-label">아는 단어</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="unknownCount">0</span>
+          <span class="stat-label">모르는 단어</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="quizCorrect">0</span>
+          <span class="stat-label">퀴즈 정답</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num" id="quizTotal">0</span>
+          <span class="stat-label">퀴즈 총 문제</span>
+        </div>
+      </div>
+      <button id="resetBtn">진도 초기화</button>
+    </section>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
